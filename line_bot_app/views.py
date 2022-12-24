@@ -7,6 +7,7 @@ from linebot import LineBotApi, WebhookParser
 from linebot.exceptions import InvalidSignatureError, LineBotApiError
 from linebot.models import MessageEvent, TextSendMessage
 
+import pandas as pd
 from ckiptagger import WS, POS, NER
 from collections import defaultdict
 import pprint
@@ -44,7 +45,7 @@ processed_corpus = [
     [token for token in text if frequency[token] > 5] for text in ckipResults]
 
 dictionary = corpora.Dictionary(processed_corpus)
-stop_word = ["我", "需要", "的", "房子"]
+stop_word = ["我", "需要", "的"]
 
 print('init done')
 
@@ -62,17 +63,16 @@ def model(words):
                 wordList[i] = removed_stop_word
 
     new_ckip = ws(wordList)
+    # print(new_ckip[0])  # ['租', '文山區', '，', '最好', '少於', '1w']
     new_vec = dictionary.doc2bow(new_ckip[0])
+    # print(new_vec)  # [(2, 1)]
 
     nlp = spacy.load("zh_core_web_sm")
     print('load')
     matcher = PhraseMatcher(nlp.vocab)
 
-    phrases = ["動物園", "木柵", "萬芳社區", "萬芳醫院", "辛亥", "麟光", "六張犁", "科技大樓", "大安", "忠孝復興", "南京復興", "中山國中", "松山機場", "大直", "劍南路", "西湖", "港墘", "文德", "內湖", "大湖公園", "葫洲", "東湖", "南港軟體園區",
-               "頂埔", "永寧", "土城", "海山", "亞東醫院", "府中", "板橋", "新埔", "江子翠", "龍山寺", "西門", "台北車站", "善導寺", "忠孝新生", "忠孝敦化", "國父紀念館", "市政府", "永春", "後山埤", "昆陽", "南港", "南港展覽館",
-               "新店", "新店區公所", "七張", "小碧潭", "大坪林", "景美", "萬隆", "公館", "台電大樓", "古亭", "小南門", "北門", "松江南京", "南京復興", "台北小巨蛋", "南京三民", "松山",
-               "南勢角", "景安", "永安市場", "頂溪", "行天宮", "中山國小", "大橋頭", "台北橋", "菜寮",  "三重", "先嗇宮", "頭前庄", "新莊", "輔大", "丹鳳", "迴龍", "三重國小", "三和國中", "徐匯中學", "三民高中", "蘆洲",
-               '象山', '台北101/世貿', '信義安和', '大安森林公園', '東門', '中正紀念堂', '台大醫院', '中山', '雙連', '民權西路', '圓山', '劍潭', '士林', '芝山', '明德', '石牌', '唭哩岸', '奇岩', '北投', '新北投', '復興崗', '忠義', '關渡', '竹圍', '紅樹林', '淡水']
+    phrases = ["松山區", "信義區", "中山區", "大安區", "內湖區",
+               "北投區", "士林區", "中正區", "南港區", "文山區", "萬華區", "大同區"]
 
     # Create Doc Objects For The Phrases
     patterns = [nlp(text) for text in phrases]
@@ -89,7 +89,8 @@ def model(words):
         if len(span.text) > len(n):
             n = span.text
     if n != '':
-        ner_dict["SAT"] = n
+        ner_dict["SEC"] = n
+    print(ner_dict)
 
     # NER
     for m in new_ckip:
@@ -100,6 +101,16 @@ def model(words):
         for x in r:
             if x[3] != n:
                 ner_dict[x[2]] = x[3]
+
+    print(ner_dict)
+    print('-' * 10)
+
+    # if new_vec[0][0] == 2:
+    #     rent_df = pd.read_csv('clean_rent.csv')
+    #     print(rent_df)
+    # elif new_vec[0][0] == 3:
+    #     newhouse_df = pd.read_csv('newhouse.csv')
+    #     print(newhouse_df)
 
     return ner_dict
 

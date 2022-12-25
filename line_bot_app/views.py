@@ -69,6 +69,13 @@ def model(words):
     words_vec = dictionary.doc2bow(words_ws_result[0])
     # print(words_vec)  # [(2, 1)]
 
+    if words_vec[0][0] == 2:
+        rent_df = pd.read_csv('clean_rent.csv')
+        # print(rent_df)
+    elif words_vec[0][0] == 3:
+        newhouse_df = pd.read_csv('newhouse.csv')
+        # print(newhouse_df)
+
     nlp = spacy.load('zh_core_web_sm')
     print('load spacy')
     matcher = PhraseMatcher(nlp.vocab)
@@ -105,16 +112,51 @@ def model(words):
 
     print(ner_dict)
 
-    if words_vec[0][0] == 2:
-        rent_df = pd.read_csv('clean_rent.csv')
-        # print(rent_df)
-    elif words_vec[0][0] == 3:
-        newhouse_df = pd.read_csv('newhouse.csv')
-        # print(newhouse_df)
+    filter = dict()
+
+    if '大於' in words_ws_result[0]:
+        i = words_ws_result[0].index('大於')
+        if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
+            filter['MONEY'] = ['>', words_ws_result[0][i+1]]
+        elif words_ws_result[0][i+2] == '坪':
+            filter['LAYOUT'] = ['>', words_ws_result[0][i+1]]
+    if '多於' in words_ws_result[0]:
+        i = words_ws_result[0].index('多於')
+        if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
+            filter['MONEY'] = ['>', words_ws_result[0][i+1]]
+        elif words_ws_result[0][i+2] == '坪':
+            filter['LAYOUT'] = ['>', words_ws_result[0][i+1]]
+    if '高於' in words_ws_result[0]:
+        i = words_ws_result[0].index('高於')
+        if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
+            filter['MONEY'] = ['>', words_ws_result[0][i+1]]
+        elif words_ws_result[0][i+2] == '坪':
+            filter['LAYOUT'] = ['>', words_ws_result[0][i+1]]
+    if '小於' in words_ws_result[0]:
+        i = words_ws_result[0].index('小於')
+        if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
+            filter['MONEY'] = ['<', words_ws_result[0][i+1]]
+        elif words_ws_result[0][i+2] == '坪':
+            filter['LAYOUT'] = ['<', words_ws_result[0][i+1]]
+    if '少於' in words_ws_result[0]:
+        i = words_ws_result[0].index('少於')
+        if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
+            filter['MONEY'] = ['<', words_ws_result[0][i+1]]
+        elif words_ws_result[0][i+2] == '坪':
+            filter['LAYOUT'] = ['<', words_ws_result[0][i+1]]
+    if '低於' in words_ws_result[0]:
+        i = words_ws_result[0].index('低於')
+        if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
+            filter['MONEY'] = ['<', words_ws_result[0][i+1]]
+        elif words_ws_result[0][i+2] == '坪':
+            filter['LAYOUT'] = ['<', words_ws_result[0][i+1]]
+
+    print(filter)
 
     message = {
         'ws': words_ws_result[0],
-        'ner': ner_dict
+        'ner': ner_dict,
+        'filter': filter
     }
 
     return message

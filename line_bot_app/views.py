@@ -114,42 +114,43 @@ def model(words):
 
     filter = dict()
 
-    if '大於' in words_ws_result[0]:
-        i = words_ws_result[0].index('大於')
-        if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
-            filter['MONEY'] = ['>', words_ws_result[0][i+1]]
-        elif words_ws_result[0][i+2] == '坪':
-            filter['LAYOUT'] = ['>', words_ws_result[0][i+1]]
-    if '多於' in words_ws_result[0]:
-        i = words_ws_result[0].index('多於')
-        if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
-            filter['MONEY'] = ['>', words_ws_result[0][i+1]]
-        elif words_ws_result[0][i+2] == '坪':
-            filter['LAYOUT'] = ['>', words_ws_result[0][i+1]]
-    if '高於' in words_ws_result[0]:
-        i = words_ws_result[0].index('高於')
-        if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
-            filter['MONEY'] = ['>', words_ws_result[0][i+1]]
-        elif words_ws_result[0][i+2] == '坪':
-            filter['LAYOUT'] = ['>', words_ws_result[0][i+1]]
-    if '小於' in words_ws_result[0]:
-        i = words_ws_result[0].index('小於')
-        if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
-            filter['MONEY'] = ['<', words_ws_result[0][i+1]]
-        elif words_ws_result[0][i+2] == '坪':
-            filter['LAYOUT'] = ['<', words_ws_result[0][i+1]]
-    if '少於' in words_ws_result[0]:
-        i = words_ws_result[0].index('少於')
-        if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
-            filter['MONEY'] = ['<', words_ws_result[0][i+1]]
-        elif words_ws_result[0][i+2] == '坪':
-            filter['LAYOUT'] = ['<', words_ws_result[0][i+1]]
-    if '低於' in words_ws_result[0]:
-        i = words_ws_result[0].index('低於')
-        if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
-            filter['MONEY'] = ['<', words_ws_result[0][i+1]]
-        elif words_ws_result[0][i+2] == '坪':
-            filter['LAYOUT'] = ['<', words_ws_result[0][i+1]]
+    for x in words_ws_result[0]:
+        if x == '大於':
+            i = words_ws_result[0].index(x)
+            if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
+                filter['MONEY'] = ['>', words_ws_result[0][i+1]]
+            elif words_ws_result[0][i+2] == '坪':
+                filter['LAYOUT'] = ['>', words_ws_result[0][i+1]]
+        elif x == '多於':
+            i = words_ws_result[0].index(x)
+            if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
+                filter['MONEY'] = ['>', words_ws_result[0][i+1]]
+            elif words_ws_result[0][i+2] == '坪':
+                filter['LAYOUT'] = ['>', words_ws_result[0][i+1]]
+        elif x == '高於':
+            i = words_ws_result[0].index(x)
+            if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
+                filter['MONEY'] = ['>', words_ws_result[0][i+1]]
+            elif words_ws_result[0][i+2] == '坪':
+                filter['LAYOUT'] = ['>', words_ws_result[0][i+1]]
+        elif x == '小於':
+            i = words_ws_result[0].index(x)
+            if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
+                filter['MONEY'] = ['<', words_ws_result[0][i+1]]
+            elif words_ws_result[0][i+2] == '坪':
+                filter['LAYOUT'] = ['<', words_ws_result[0][i+1]]
+        elif x == '少於':
+            i = words_ws_result[0].index(x)
+            if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
+                filter['MONEY'] = ['<', words_ws_result[0][i+1]]
+            elif words_ws_result[0][i+2] == '坪':
+                filter['LAYOUT'] = ['<', words_ws_result[0][i+1]]
+        elif x == '低於':
+            i = words_ws_result[0].index(x)
+            if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
+                filter['MONEY'] = ['<', words_ws_result[0][i+1]]
+            elif words_ws_result[0][i+2] == '坪':
+                filter['LAYOUT'] = ['<', words_ws_result[0][i+1]]
 
     print(filter)
 

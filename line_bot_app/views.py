@@ -224,6 +224,11 @@ def output_data(output_dict):
 
     rent_df = rent
 
+    ws_list = output_dict['ws']
+    for i in range(len(ws_list)):
+    if(ws_list[i]):
+        rent_df = rent_df.loc[rent_df['kind'] != '車位'] #若使用者輸入房子則 rend_df 移除車位欄位
+
     for i in range(0,len(ner_dict)):
         # 處理 ner 出來的資訊
         if(Ner_key[i] == 'SEC'): #section（區）
@@ -271,7 +276,6 @@ def output_data(output_dict):
             filter_dict[filter_key[i]][1] = chinese_to_arabic(filter_dict[filter_key[i]][1])
         except:
             pass
-    print(output_dict)
 
     for n in range(len(output_dict['filter'])): #判別 filter
 

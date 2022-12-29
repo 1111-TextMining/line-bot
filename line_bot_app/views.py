@@ -217,6 +217,7 @@ def model(words):
 
     return message
 
+
 def output_data(output_dict):
     ner_dict = output_dict['ner']
     Ner_key = list(ner_dict.keys())
@@ -226,36 +227,37 @@ def output_data(output_dict):
 
     ws_list = output_dict['ws']
     for i in range(len(ws_list)):
-    if(ws_list[i]):
-        rent_df = rent_df.loc[rent_df['kind'] != '車位'] #若使用者輸入房子則 rend_df 移除車位欄位
+        if (ws_list[i]):
+            # 若使用者輸入房子則 rend_df 移除車位欄位
+            rent_df = rent_df.loc[rent_df['kind'] != '車位']
 
-    for i in range(0,len(ner_dict)):
+    for i in range(0, len(ner_dict)):
         # 處理 ner 出來的資訊
-        if(Ner_key[i] == 'SEC'): #section（區）
-            ner_dict['section'] = Ner_value[i]                         
+        if (Ner_key[i] == 'SEC'):  # section（區）
+            ner_dict['section'] = Ner_value[i]
             del ner_dict['SEC']
 
-        elif(Ner_key[i] == 'GPE'): #section（區）
-            ner_dict['section'] = Ner_value[i]                         
+        elif (Ner_key[i] == 'GPE'):  # section（區）
+            ner_dict['section'] = Ner_value[i]
             del ner_dict['GPE']
 
-        elif(Ner_key[i] == 'LOC'): #section（區）
-            ner_dict['section'] = Ner_value[i]                         
+        elif (Ner_key[i] == 'LOC'):  # section（區）
+            ner_dict['section'] = Ner_value[i]
             del ner_dict['LOC']
-                            
-        elif(Ner_key[i] == 'MONEY'): #價格 
+
+        elif (Ner_key[i] == 'MONEY'):  # 價格
             ner_dict['price'] = Ner_value[i]
             del ner_dict['MONEY']
 
-        elif(Ner_key[i] == 'CARDINAL'): #價格
+        elif (Ner_key[i] == 'CARDINAL'):  # 價格
             ner_dict['price'] = Ner_value[i]
             del ner_dict['CARDINAL']
 
-        elif(Ner_key[i] == 'QUANTITY'): #坪數
+        elif (Ner_key[i] == 'QUANTITY'):  # 坪數
             ner_dict['area (坪)'] = Ner_value[i]
             del ner_dict['QUANTITY']
-  
-        # elif(Ner_key[i] == 'REQ'): 
+
+        # elif(Ner_key[i] == 'REQ'):
         #   if(Ner_value[i] == '管理費'): #管理費
         #     ner_dict['area (坪)'] = Ner_value[i]
         #     del ner_dict['QUANTITY']
@@ -264,41 +266,43 @@ def output_data(output_dict):
         #     ner_dict['area (坪)'] = Ner_value[i]
         #     del ner_dict['QUANTITY']
 
-    #若有 filter 值
+    # 若有 filter 值
     filter_dict = output_dict['filter']
     filter_key = list(filter_dict.keys())
     filter_value = list(filter_dict.values())
     Ner_after = ner_dict
 
-    #轉中文字至數字
+    # 轉中文字至數字
     for i in range(len(filter_dict)):
         try:
-            filter_dict[filter_key[i]][1] = chinese_to_arabic(filter_dict[filter_key[i]][1])
+            filter_dict[filter_key[i]][1] = chinese_to_arabic(
+                filter_dict[filter_key[i]][1])
         except:
             pass
 
-    for n in range(len(output_dict['filter'])): #判別 filter
+    for n in range(len(output_dict['filter'])):  # 判別 filter
 
-        if(list(output_dict['filter'].keys())[n] == 'LAYOUT'):
+        if (list(output_dict['filter'].keys())[n] == 'LAYOUT'):
             Layout_key = filter_dict['LAYOUT'][0]
-            Layout_value = int(filter_dict['LAYOUT'][1].split('坪')[0]) #去除坪數單位
-            if(Layout_key == '>'): #大於
+            Layout_value = int(
+                filter_dict['LAYOUT'][1].split('坪')[0])  # 去除坪數單位
+            if (Layout_key == '>'):  # 大於
                 c[rent_df['area (坪)'] > Layout_value]
-            elif(Layout_key == '<'): #小於
+            elif (Layout_key == '<'):  # 小於
                 rent_df = rent_df.loc[rent_df['area (坪)'] < Layout_value]
             del Ner_after['area (坪)']
 
-        elif(list(output_dict['filter'].keys())[n] == 'MONEY'):
+        elif (list(output_dict['filter'].keys())[n] == 'MONEY'):
             MONEY_key = filter_dict['MONEY'][0]
-            MONEY_value = int(filter_dict['MONEY'][1].split('元')[0]) #去除金額單位
-            if(MONEY_key == '>'): #大於
+            MONEY_value = int(filter_dict['MONEY'][1].split('元')[0])  # 去除金額單位
+            if (MONEY_key == '>'):  # 大於
                 rent_df = rent_df.loc[rent_df['price'] > MONEY_value]
-            elif(MONEY_key == '<'): #小於
+            elif (MONEY_key == '<'):  # 小於
                 rent_df = rent_df.loc[rent_df['price'] < MONEY_value]
             del Ner_after['price']
-    
+
     try:
-        if(len(ner_dict['area (坪)'])>1): #deal with 坪數區間值
+        if (len(ner_dict['area (坪)']) > 1):  # deal with 坪數區間值
             a = chinese_to_arabic(ner_dict['area (坪)'][0].split('坪')[0])
             b = chinese_to_arabic(ner_dict['area (坪)'][1].split('坪')[0])
             min_area = min(a, b)
@@ -310,7 +314,7 @@ def output_data(output_dict):
         pass
 
     try:
-        if(len(ner_dict['price'])>1): #deal with 價格區間值
+        if (len(ner_dict['price']) > 1):  # deal with 價格區間值
             a = chinese_to_arabic(ner_dict['price'][0].split('元')[0])
             b = chinese_to_arabic(ner_dict['price'][1].split('元')[0])
             min_price = min(a, b)
@@ -321,9 +325,10 @@ def output_data(output_dict):
     except:
         pass
 
-    for i in range(len(Ner_after)): #其他的 Ner select
-        rent_df = rent_df.loc[rent_df[list(Ner_after.keys())[i]] == list(Ner_after.values())[i][0]]   
-    
+    for i in range(len(Ner_after)):  # 其他的 Ner select
+        rent_df = rent_df.loc[rent_df[list(Ner_after.keys())[i]] == list(
+            Ner_after.values())[i][0]]
+
     # 隨機挑選5個數字，作為隨機挑出的5筆資料的index
     sample = []
     for i in range(5):
@@ -340,40 +345,43 @@ def output_data(output_dict):
         result_text += '\n'
         result_text += result_url[i]
         result_text += '\n'
-        
+
     return result_text
 
-def chinese_to_arabic(chinese_value):
-  zh2digit_table = {'零': 0, '一': 1, '二': 2, '兩': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10, '百': 100, '千': 1000, '〇': 0, '○': 0, '○': 0, '０': 0, '１': 1, '２': 2, '３': 3, '４': 4, '５': 5, '６': 6, '７': 7, '８': 8, '９': 9, '壹': 1, '貳': 2, '參': 3, '肆': 4, '伍': 5, '陆': 6, '柒': 7, '捌': 8, '玖': 9, '拾': 10, '佰': 100, '仟': 1000, '萬': 10000, '億': 100000000}
-  digit_num = 0
-  result = 0
-  tmp = 0
-  billion = 0
 
-  while digit_num < len(chinese_value):
-      tmp_zh = chinese_value[digit_num]
-      tmp_num = zh2digit_table.get(tmp_zh, None)
-      if tmp_num == 100000000:
-          result = result + tmp
-          result = result * tmp_num
-          billion = billion * 100000000 + result
-          result = 0
-          tmp = 0
-      elif tmp_num == 10000:
-          result = result + tmp
-          result = result * tmp_num
-          tmp = 0
-      elif tmp_num >= 10:
-          if tmp == 0:
-              tmp = 1
-          result = result + tmp_num * tmp
-          tmp = 0
-      elif tmp_num is not None:
-          tmp = tmp * 10 + tmp_num
-      digit_num += 1
-  result = result + tmp
-  result = result + billion
-  return result
+def chinese_to_arabic(chinese_value):
+    zh2digit_table = {'零': 0, '一': 1, '二': 2, '兩': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10, '百': 100, '千': 1000, '〇': 0, '○': 0, '○': 0, '０': 0, '１': 1, '２': 2,
+                      '３': 3, '４': 4, '５': 5, '６': 6, '７': 7, '８': 8, '９': 9, '壹': 1, '貳': 2, '參': 3, '肆': 4, '伍': 5, '陆': 6, '柒': 7, '捌': 8, '玖': 9, '拾': 10, '佰': 100, '仟': 1000, '萬': 10000, '億': 100000000}
+    digit_num = 0
+    result = 0
+    tmp = 0
+    billion = 0
+
+    while digit_num < len(chinese_value):
+        tmp_zh = chinese_value[digit_num]
+        tmp_num = zh2digit_table.get(tmp_zh, None)
+        if tmp_num == 100000000:
+            result = result + tmp
+            result = result * tmp_num
+            billion = billion * 100000000 + result
+            result = 0
+            tmp = 0
+        elif tmp_num == 10000:
+            result = result + tmp
+            result = result * tmp_num
+            tmp = 0
+        elif tmp_num >= 10:
+            if tmp == 0:
+                tmp = 1
+            result = result + tmp_num * tmp
+            tmp = 0
+        elif tmp_num is not None:
+            tmp = tmp * 10 + tmp_num
+        digit_num += 1
+    result = result + tmp
+    result = result + billion
+    return result
+
 
 @csrf_exempt
 def callback(request):

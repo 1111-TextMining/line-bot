@@ -221,7 +221,9 @@ def output_data(output_dict):
     ner_dict = output_dict['ner']
     Ner_key = list(ner_dict.keys())
     Ner_value = list(ner_dict.values())
+
     rent_df = rent
+
     for i in range(0,len(ner_dict)):
         # 處理 ner 出來的資訊
         if(Ner_key[i] == 'SEC'): #section（區）
@@ -275,7 +277,7 @@ def output_data(output_dict):
 
         if(list(output_dict['filter'].keys())[n] == 'LAYOUT'):
             Layout_key = filter_dict['LAYOUT'][0]
-            Layout_value = int(filter_dict['LAYOUT'][1])
+            Layout_value = int(filter_dict['LAYOUT'][1].split('坪')[0]) #去除坪數單位
             if(Layout_key == '>'): #大於
                 c[rent_df['area (坪)'] > Layout_value]
             elif(Layout_key == '<'): #小於
@@ -284,7 +286,7 @@ def output_data(output_dict):
 
         elif(list(output_dict['filter'].keys())[n] == 'MONEY'):
             MONEY_key = filter_dict['MONEY'][0]
-            MONEY_value = int(filter_dict['MONEY'][1])
+            MONEY_value = int(filter_dict['MONEY'][1].split('元')[0]) #去除金額單位
             if(MONEY_key == '>'): #大於
                 rent_df = rent_df.loc[rent_df['price'] > MONEY_value]
             elif(MONEY_key == '<'): #小於
@@ -292,9 +294,7 @@ def output_data(output_dict):
             del Ner_after['price']
     
     try:
-        min_area = 0
-        max_area = 0
-        if(len(ner_dict['area (坪)'])>1): #deal with 區間值
+        if(len(ner_dict['area (坪)'])>1): #deal with 坪數區間值
             a = chinese_to_arabic(ner_dict['area (坪)'][0].split('坪')[0])
             b = chinese_to_arabic(ner_dict['area (坪)'][1].split('坪')[0])
             min_area = min(a, b)
@@ -302,6 +302,18 @@ def output_data(output_dict):
             rent_df = rent_df.loc[rent_df['area (坪)'] > float(min_area)]
             rent_df = rent_df.loc[rent_df['area (坪)'] < float(max_area)]
             del ner_dict['area (坪)']
+    except:
+        pass
+
+    try:
+        if(len(ner_dict['price'])>1): #deal with 價格區間值
+            a = chinese_to_arabic(ner_dict['price'][0].split('元')[0])
+            b = chinese_to_arabic(ner_dict['price'][1].split('元')[0])
+            min_price = min(a, b)
+            max_price = max(a, b)
+            rent_df = rent_df.loc[rent_df['price'] > float(min_price)]
+            rent_df = rent_df.loc[rent_df['price'] < float(max_price)]
+            del ner_dict['price']
     except:
         pass
 

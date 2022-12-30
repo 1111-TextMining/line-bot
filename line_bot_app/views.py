@@ -318,7 +318,7 @@ def output_data(output_dict):
             max_area = max(a_value, b_value)
             rent_df = rent_df.loc[rent_df['area (坪)'] > float(min_area)]
             rent_df = rent_df.loc[rent_df['area (坪)'] < float(max_area)]
-            del ner_dict['area (坪)']
+            del Ner_after['area (坪)']
 
     except:
         pass
@@ -338,13 +338,12 @@ def output_data(output_dict):
             max_price = max(a_value, b_value)
             rent_df = rent_df.loc[rent_df['price'] > float(min_price)]
             rent_df = rent_df.loc[rent_df['price'] < float(max_price)]
-            del ner_dict['price']
+            del Ner_after['price']
     except:
         pass
-
-    for i in range(len(Ner_after)):  # 其他的 Ner select
-        rent_df = rent_df.loc[rent_df[list(Ner_after.keys())[i]] == list(
-            Ner_after.values())[i][0]]
+    if(len(Ner_after)!=0):
+        for i in range(len(Ner_after)):  # 其他的 Ner select
+            rent_df = rent_df.loc[rent_df[list(Ner_after.keys())[i]] == list(Ner_after.values())[i][0]]
 
     # 隨機挑選5個數字，作為隨機挑出的5筆資料的index
     sample = []

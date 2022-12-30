@@ -15,7 +15,7 @@ from gensim import corpora
 import spacy
 from spacy.matcher import PhraseMatcher
 import random
-from Flex_msg import *
+from line_bot_app.Flex_msg import *
 
 # Create your views here.
 line_bot_api = LineBotApi(settings.LINE_CHANNEL_ACCESS_TOKEN)
@@ -89,16 +89,6 @@ def model(words):
     ner_dict = dict()
 
     # Find Matches
-    # sec = ''
-    # doc = nlp(words)
-    # matches = matcher(doc)
-    # for match_id, start, end in matches:
-    #     span = doc[start:end]
-    #     sec = span.text
-    # if sec != '':
-    #     ner_dict['SEC'] = sec
-    # print(ner_dict)
-
     words_with_space = ''
     for word in words_ws_result[0]:
         words_with_space += word + ' '
@@ -123,17 +113,6 @@ def model(words):
         ner_dict['REQ'] = request
 
     # NER
-    # for x in words_ws_result:
-    #     pos_results = pos([x])
-    #     ner_results = ner([x], pos_results)
-
-    # for result in ner_results:
-    #     for x in result:
-    #         if x[3] != sec:
-    #             ner_dict[x[2]] = x[3]
-
-    # print(ner_dict)
-
     ner_list = []
     for x in words_ws_result:
         pos_results = pos([x])
@@ -156,46 +135,6 @@ def model(words):
 
     filter = dict()
 
-    # for x in words_ws_result[0]:
-    #     if x == '大於':
-    #         i = words_ws_result[0].index(x)
-    #         if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
-    #             filter['MONEY'] = ['>', words_ws_result[0][i+1]]
-    #         elif words_ws_result[0][i+2] == '坪':
-    #             filter['LAYOUT'] = ['>', words_ws_result[0][i+1]]
-    #     elif x == '多於':
-    #         i = words_ws_result[0].index(x)
-    #         if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
-    #             filter['MONEY'] = ['>', words_ws_result[0][i+1]]
-    #         elif words_ws_result[0][i+2] == '坪':
-    #             filter['LAYOUT'] = ['>', words_ws_result[0][i+1]]
-    #     elif x == '高於':
-    #         i = words_ws_result[0].index(x)
-    #         if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
-    #             filter['MONEY'] = ['>', words_ws_result[0][i+1]]
-    #         elif words_ws_result[0][i+2] == '坪':
-    #             filter['LAYOUT'] = ['>', words_ws_result[0][i+1]]
-    #     elif x == '小於':
-    #         i = words_ws_result[0].index(x)
-    #         if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
-    #             filter['MONEY'] = ['<', words_ws_result[0][i+1]]
-    #         elif words_ws_result[0][i+2] == '坪':
-    #             filter['LAYOUT'] = ['<', words_ws_result[0][i+1]]
-    #     elif x == '少於':
-    #         i = words_ws_result[0].index(x)
-    #         if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
-    #             filter['MONEY'] = ['<', words_ws_result[0][i+1]]
-    #         elif words_ws_result[0][i+2] == '坪':
-    #             filter['LAYOUT'] = ['<', words_ws_result[0][i+1]]
-    #     elif x == '低於':
-    #         i = words_ws_result[0].index(x)
-    #         if words_ws_result[0][i+2] == '元' or words_ws_result[0][i+2] == '塊':
-    #             filter['MONEY'] = ['<', words_ws_result[0][i+1]]
-    #         elif words_ws_result[0][i+2] == '坪':
-    #             filter['LAYOUT'] = ['<', words_ws_result[0][i+1]]
-
-    # print(filter)
-
     for nk in ner_dict:
         if nk == 'MONEY' or nk == 'CARDINAL':
             if len(ner_dict[nk]) == 1:
@@ -215,6 +154,7 @@ def model(words):
         'ner': ner_dict,
         'filter': filter
     }
+    print(message)
 
     return message
 
@@ -283,7 +223,7 @@ def output_data(output_dict):
 
     for n in range(len(output_dict['filter'])):  # 判別 filter
 
-        if(list(output_dict['filter'].keys())[n] == 'LAYOUT' and len(ner_dict['area (坪)']) <= 1):
+        if (list(output_dict['filter'].keys())[n] == 'LAYOUT' and len(ner_dict['area (坪)']) <= 1):
             Layout_key = filter_dict['LAYOUT'][0]
             Layout_value = int(
                 filter_dict['LAYOUT'][1].split('坪')[0])  # 去除坪數單位
@@ -293,7 +233,7 @@ def output_data(output_dict):
                 rent_df = rent_df.loc[rent_df['area (坪)'] < Layout_value]
             del Ner_after['area (坪)']
 
-        elif(list(output_dict['filter'].keys())[n] == 'MONEY' and len(ner_dict['price']) <= 1):
+        elif (list(output_dict['filter'].keys())[n] == 'MONEY' and len(ner_dict['price']) <= 1):
             MONEY_key = filter_dict['MONEY'][0]
             MONEY_value = int(filter_dict['MONEY'][1].split('元')[0])  # 去除金額單位
             if (MONEY_key == '>'):  # 大於
@@ -304,16 +244,16 @@ def output_data(output_dict):
 
     try:
 
-        if(len(ner_dict['area (坪)'])>1): #deal with 價格區間值
+        if (len(ner_dict['area (坪)']) > 1):  # deal with 價格區間值
             a = ner_dict['area (坪)'][0].split('坪')[0]
             b = ner_dict['area (坪)'][1].split('坪')[0]
-            if(str.isdigit(a) == True): #代表已經是數值了，不需要轉換中文成數字
+            if (str.isdigit(a) == True):  # 代表已經是數值了，不需要轉換中文成數字
                 a_value = int(a)
-            if(str.isdigit(b) == True):
+            if (str.isdigit(b) == True):
                 b_value = int(b)
-            if(str.isdigit(a) != True): #代表是中字，需要轉換中文成數字
+            if (str.isdigit(a) != True):  # 代表是中字，需要轉換中文成數字
                 a_value = chinese_to_arabic(a)
-            if(str.isdigit(b) != True):
+            if (str.isdigit(b) != True):
                 b_value = chinese_to_arabic(b)
             min_area = min(a_value, b_value)
             max_area = max(a_value, b_value)
@@ -324,16 +264,16 @@ def output_data(output_dict):
     except:
         pass
     try:
-        if(len(ner_dict['price'])>1): #deal with 價格區間值
+        if (len(ner_dict['price']) > 1):  # deal with 價格區間值
             a = ner_dict['price'][0].split('元')[0]
             b = ner_dict['price'][1].split('元')[0]
-            if(str.isdigit(a) == True): #代表已經是數值了，不需要轉換中文成數字
+            if (str.isdigit(a) == True):  # 代表已經是數值了，不需要轉換中文成數字
                 a_value = int(a)
-            if(str.isdigit(b) == True):
+            if (str.isdigit(b) == True):
                 b_value = int(b)
-            if(str.isdigit(a) != True): #代表是中字，需要轉換中文成數字
+            if (str.isdigit(a) != True):  # 代表是中字，需要轉換中文成數字
                 a_value = chinese_to_arabic(a)
-            if(str.isdigit(b) != True):
+            if (str.isdigit(b) != True):
                 b_value = chinese_to_arabic(b)
             min_price = min(a_value, b_value)
             max_price = max(a_value, b_value)
@@ -342,9 +282,10 @@ def output_data(output_dict):
             del Ner_after['price']
     except:
         pass
-    if(len(Ner_after)!=0):
+    if (len(Ner_after) != 0):
         for i in range(len(Ner_after)):  # 其他的 Ner select
-            rent_df = rent_df.loc[rent_df[list(Ner_after.keys())[i]] == list(Ner_after.values())[i][0]]
+            rent_df = rent_df.loc[rent_df[list(Ner_after.keys())[i]] == list(
+                Ner_after.values())[i][0]]
 
     # 隨機挑選5個數字，作為隨機挑出的5筆資料的index
     sample = []
@@ -423,7 +364,7 @@ def callback(request):
                 result_text = output_data(output_dict)
                 line_bot_api.reply_message(
                     event.reply_token,
-                    TextSendMessage(house(result_text))
+                    house(result_text)
                 )
         return HttpResponse()
     else:

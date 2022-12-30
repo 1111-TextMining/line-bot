@@ -15,6 +15,7 @@ from gensim import corpora
 import spacy
 from spacy.matcher import PhraseMatcher
 import random
+from Flex_msg import *
 
 # Create your views here.
 line_bot_api = LineBotApi(settings.LINE_CHANNEL_ACCESS_TOKEN)
@@ -350,17 +351,19 @@ def output_data(output_dict):
     for i in range(5):
         sample.append(random.randint(0, len(rent_df) - 1))
     # 將隨機挑出的資料，轉為list
-    result = rent_df.iloc[sample, [4, 18]]
+    result = rent_df.iloc[sample, [4, 18, 19]]
     result_title = result['title'].values.tolist()
     result_url = result['url'].values.tolist()
+    result_pic = result['pic'].values.tolist()
 
     # 將挑出的資料依序組合成字串
-    result_text = ""
+    result_text = {}
     for i in range(5):
-        result_text += result_title[i]
-        result_text += '\n'
-        result_text += result_url[i]
-        result_text += '\n'
+        result_list = []
+        result_list.append(result_title[i])
+        result_list.append(result_url[i])
+        result_list.append(result_pic[i])
+        result_text[i] = result_list
 
     return result_text
 
@@ -417,9 +420,10 @@ def callback(request):
             if isinstance(event, MessageEvent):
                 print('event.message.text', event.message.text)
                 output_dict = model(event.message.text)
+                result_text = output_data(output_dict)
                 line_bot_api.reply_message(
                     event.reply_token,
-                    TextSendMessage(text=output_data(output_dict))
+                    TextSendMessage(house(result_text))
                 )
         return HttpResponse()
     else:

@@ -257,10 +257,10 @@ def output_data(output_dict):
                     b_value = int(b)
                 elif(str.isdigit(b) != True):
                     b_value = chinese_to_arabic(b)
-            min_area = min(a_value, b_value)
-            max_area = max(a_value, b_value)
-            rent_df = rent_df.loc[rent_df['area (坪)'] > float(min_area)]
-            rent_df = rent_df.loc[rent_df['area (坪)'] < float(max_area)]
+                min_area = min(a_value, b_value)
+                max_area = max(a_value, b_value)
+                rent_df = rent_df.loc[rent_df['area (坪)'] > float(min_area)]
+                rent_df = rent_df.loc[rent_df['area (坪)'] < float(max_area)]
             del Ner_after['area (坪)']
         else:
             rent_df = rent_df.loc[rent_df['area (坪)'] == float(a_value)]
@@ -275,16 +275,17 @@ def output_data(output_dict):
                 a_value = int(a)
             elif(str.isdigit(a) != True): #代表是中字，需要轉換中文成數字
                 a_value = chinese_to_arabic(a)
+
             if(len(ner_dict['price'])>1):
                 b = ner_dict['price'][1].split('元')[0]
                 if(str.isdigit(b) == True):
                     b_value = int(b)
                 elif(str.isdigit(b) != True):
                     b_value = chinese_to_arabic(b)
-            min_price = min(a_value, b_value)
-            max_price = max(a_value, b_value)
-            rent_df = rent_df.loc[rent_df['price'] > float(min_price)]
-            rent_df = rent_df.loc[rent_df['price'] < float(max_price)]
+                min_price = min(a_value, b_value)
+                max_price = max(a_value, b_value)
+                rent_df = rent_df.loc[rent_df['price'] > float(min_price)]
+                rent_df = rent_df.loc[rent_df['price'] < float(max_price)]
             del Ner_after['price']
         else:
             rent_df = rent_df.loc[rent_df['price'] == float(a_value)]

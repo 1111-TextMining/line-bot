@@ -3,17 +3,17 @@ from linebot.models import *
 import random
 
 def output_data(output_dict):
+    rent_df = pd.read_csv('clean_rent.csv')
+
     ner_dict = output_dict['ner']
     Ner_key = list(ner_dict.keys())
     Ner_value = list(ner_dict.values())
-    rent_df = pd.read_csv('clean_rent.csv')
 
     ws_list = output_dict['ws']
     for i in range(len(ws_list)):
         if (ws_list[i]):
             # 若使用者輸入房子則 rend_df 移除車位欄位
             rent_df = rent_df.loc[rent_df['kind'] != '車位']
-
     for i in range(0, len(ner_dict)):
         # 處理 ner 出來的資訊
         if (Ner_key[i] == 'SEC'):  # section（區）
@@ -39,21 +39,40 @@ def output_data(output_dict):
         elif (Ner_key[i] == 'QUANTITY'):  # 坪數
             ner_dict['area (坪)'] = Ner_value[i]
             del ner_dict['QUANTITY']
+    
+    Ner_after = ner_dict
+    try:
+        for i in range(0, len(ner_dict['REQ'])):
+            if(ner_dict['REQ'][i] == '公車站'):
+                rent_df = rent_df.loc[rent_df['bus'] >= 1]
+            
+            elif(ner_dict['REQ'][i] == '管理費'):
+                rent_df = rent_df.loc[rent_df['priceadd'] == '管理費']
 
-        # elif(Ner_key[i] == 'REQ'):
-        #   if(Ner_value[i] == '管理費'): #管理費
-        #     ner_dict['area (坪)'] = Ner_value[i]
-        #     del ner_dict['QUANTITY']
+            elif(ner_dict['REQ'][i] == '小學' or ner_dict['REQ'][i] == '中學'):
+                rent_df = rent_df.loc[rent_df['primary'] >= 1]
 
-        #   if(Ner_value[i] == '車站'): #車站
-        #     ner_dict['area (坪)'] = Ner_value[i]
-        #     del ner_dict['QUANTITY']
+            elif(ner_dict['REQ'][i] == '高中'):
+                rent_df = rent_df.loc[rent_df['secondary'] >= 1]
+
+            elif(ner_dict['REQ'][i] == '大學'):
+                rent_df = rent_df.loc[rent_df['university'] >= 1]
+
+            elif(ner_dict['REQ'][i] == '餐廳'):
+                rent_df = rent_df.loc[rent_df['restaurant'] >= 1]
+
+            elif(ner_dict['REQ'][i] == '地鐵站' or ner_dict['REQ'][i] == '捷運站'):
+                rent_df = rent_df.loc[rent_df['subway'] >= 1]
+            
+        del Ner_after['REQ']
+            
+    except:
+        pass
 
     # 若有 filter 值
     filter_dict = output_dict['filter']
     filter_key = list(filter_dict.keys())
     filter_value = list(filter_dict.values())
-    Ner_after = ner_dict
 
     # 轉中文字至數字
     for i in range(len(filter_dict)):

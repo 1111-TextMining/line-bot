@@ -261,10 +261,10 @@ def output_data(output_dict):
                 max_area = max(a_value, b_value)
                 rent_df = rent_df.loc[rent_df['area (坪)'] > float(min_area)]
                 rent_df = rent_df.loc[rent_df['area (坪)'] < float(max_area)]
-            del Ner_after['area (坪)']
-        else:
-            rent_df = rent_df.loc[rent_df['area (坪)'] == float(a_value)]
-            del Ner_after['area (坪)']
+                del Ner_after['area (坪)']
+            else:
+                rent_df = rent_df.loc[rent_df['area (坪)'] == float(a_value)]
+                del Ner_after['area (坪)']
     except:
         pass
     try:
@@ -286,10 +286,10 @@ def output_data(output_dict):
                 max_price = max(a_value, b_value)
                 rent_df = rent_df.loc[rent_df['price'] > float(min_price)]
                 rent_df = rent_df.loc[rent_df['price'] < float(max_price)]
-            del Ner_after['price']
-        else:
-            rent_df = rent_df.loc[rent_df['price'] == float(a_value)]
-            del Ner_after['price']
+                del Ner_after['price']
+            else:
+                rent_df = rent_df.loc[rent_df['price'] == float(a_value)]
+                del Ner_after['price']
     except:
         pass
 

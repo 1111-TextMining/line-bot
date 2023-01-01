@@ -305,7 +305,8 @@ def output_data(output_dict):
             for i in range(len(rent_df)):
                 sample.append(random.randint(0, len(rent_df) - 1))
         # 將隨機挑出的資料，轉為list
-        result = rent_df.iloc[sample, [4, 6, 7, 8, 18, 19]]
+        result = rent_df.iloc[sample, [2, 4, 6, 7, 8, 18, 19]]
+        result_section = result['section'].values.tolist()
         result_title = result['title'].values.tolist()
         result_price = result['price'].values.tolist()
         result_layout = result['layout'].values.tolist()
@@ -317,6 +318,7 @@ def output_data(output_dict):
         result_text = {}
         for i in range(len(result)):
             result_list = []
+            result_list.append(result_section[i])
             result_list.append(result_title[i])
             result_list.append(result_price[i])
             result_list.append(result_layout[i])

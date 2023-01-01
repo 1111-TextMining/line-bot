@@ -11,11 +11,12 @@ def house(result_text):
     # datas = House.objects.filter(uid=uid)
     for i in range(len(result_text)):
         house_name = result_text[i][0]  # 第0個位置表標題
-        price = result_text[i][1]  # 第1個位置表價格
-        layout = result_text[i][2]  # 第2個位置表幾房幾廳
-        area = result_text[i][3]  # 第3個位置表坪數
-        url = result_text[i][4]  # 第4個位置表591url
-        pic = result_text[i][5]  # 第5個位置表圖片
+        section = result_text[i][1]  # 第0個位置表標題
+        price = result_text[i][2]  # 第1個位置表價格
+        layout = result_text[i][3]  # 第2個位置表幾房幾廳
+        area = result_text[i][4]  # 第3個位置表坪數
+        url = result_text[i][5]  # 第4個位置表591url
+        pic = result_text[i][6]  # 第5個位置表圖片
         print(pic, url, house_name)
         bubble = {
             "type": "bubble",
@@ -48,6 +49,30 @@ def house(result_text):
                         "margin": "lg",
                         "spacing": "sm",
                         "contents": [
+                            {
+                                "type": "box",
+                                "layout": "baseline",
+                                "spacing": "sm",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": "地區",
+                                        "color": "#aaaaaa",
+                                        "size": "sm",
+                                        "flex": 2,
+                                        "wrap": True
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": section,
+                                        "wrap": True,
+                                        "color": "#666666",
+                                        "size": "sm",
+                                        "flex": 5,
+                                        "wrap": True
+                                    }
+                                ]
+                            },
                             {
                                 "type": "box",
                                 "layout": "baseline",

@@ -11,10 +11,12 @@ def house(result_text):
     # datas = House.objects.filter(uid=uid)
     for i in range(len(result_text)):
         house_name = result_text[i][0]  # 第0個位置表標題
-        url = result_text[i][1]  # 第1個位置表圖片
-        pic = result_text[i][2]  # 第2個位置表圖片
+        price = result_text[i][1]  # 第1個位置表價格
+        layout = result_text[i][2]  # 第2個位置表幾房幾廳
+        area = result_text[i][3]  # 第3個位置表坪數
+        url = result_text[i][4]  # 第4個位置表591url
+        pic = result_text[i][5]  # 第5個位置表圖片
         print(pic, url, house_name)
-        print(str(pic))
         bubble = {
             "type": "bubble",
             "size": "micro",
@@ -53,15 +55,15 @@ def house(result_text):
                                 "contents": [
                                     {
                                         "type": "text",
-                                        "text": "Place",
+                                        "text": "價格",
                                         "color": "#aaaaaa",
                                         "size": "sm",
-                                        "flex": 1,
+                                        "flex": 2,
                                         "wrap": True
                                     },
                                     {
                                         "type": "text",
-                                        "text": "Miraina Tower, 4-1-6 Shinjuku, Tokyo",
+                                        "text": str(int(price)),
                                         "wrap": True,
                                         "color": "#666666",
                                         "size": "sm",
@@ -77,15 +79,39 @@ def house(result_text):
                                 "contents": [
                                     {
                                         "type": "text",
-                                        "text": "Time",
+                                        "text": "格局",
                                         "color": "#aaaaaa",
                                         "size": "sm",
-                                        "flex": 1,
+                                        "flex": 2,
                                         "wrap": True
                                     },
                                     {
                                         "type": "text",
-                                        "text": "10:00 - 23:00",
+                                        "text": layout,
+                                        "wrap": True,
+                                        "color": "#666666",
+                                        "size": "sm",
+                                        "flex": 5,
+                                        "wrap": True
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "box",
+                                "layout": "baseline",
+                                "spacing": "sm",
+                                "contents": [
+                                    {
+                                        "type": "text",
+                                        "text": "坪數",
+                                        "color": "#aaaaaa",
+                                        "size": "sm",
+                                        "flex": 2,
+                                        "wrap": True
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": area,
                                         "wrap": True,
                                         "color": "#666666",
                                         "size": "sm",

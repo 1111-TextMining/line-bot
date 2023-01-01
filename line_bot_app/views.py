@@ -241,75 +241,95 @@ def output_data(output_dict):
             elif (MONEY_key == '<'):  # 小於
                 rent_df = rent_df.loc[rent_df['price'] < MONEY_value]
             del Ner_after['price']
-
     try:
-
-        if (len(ner_dict['area (坪)']) > 1):  # deal with 價格區間值
+        if(len(ner_dict['area (坪)'])>=1): #deal with 價格區間值
             a = ner_dict['area (坪)'][0].split('坪')[0]
-            b = ner_dict['area (坪)'][1].split('坪')[0]
-            if (str.isdigit(a) == True):  # 代表已經是數值了，不需要轉換中文成數字
+            a_value = 0
+            if(str.isdigit(a) == True): #代表已經是數值了，不需要轉換中文成數字
                 a_value = int(a)
-            if (str.isdigit(b) == True):
-                b_value = int(b)
-            if (str.isdigit(a) != True):  # 代表是中字，需要轉換中文成數字
+            elif(str.isdigit(a) != True): #代表是中字，需要轉換中文成數字
                 a_value = chinese_to_arabic(a)
-            if (str.isdigit(b) != True):
+            
+            if(len(ner_dict['area (坪)'])>1):
+                b = ner_dict['area (坪)'][1].split('坪')[0]
+            if(str.isdigit(b) == True):
+                b_value = int(b)
+            elif(str.isdigit(b) != True):
                 b_value = chinese_to_arabic(b)
             min_area = min(a_value, b_value)
             max_area = max(a_value, b_value)
             rent_df = rent_df.loc[rent_df['area (坪)'] > float(min_area)]
             rent_df = rent_df.loc[rent_df['area (坪)'] < float(max_area)]
             del Ner_after['area (坪)']
-
+        else:
+            rent_df = rent_df.loc[rent_df['area (坪)'] == float(a_value)]
+            del Ner_after['area (坪)']
     except:
         pass
     try:
-        if (len(ner_dict['price']) > 1):  # deal with 價格區間值
+        if(len(ner_dict['price'])>=1):
             a = ner_dict['price'][0].split('元')[0]
-            b = ner_dict['price'][1].split('元')[0]
-            if (str.isdigit(a) == True):  # 代表已經是數值了，不需要轉換中文成數字
+            a_value = 0
+            if(str.isdigit(a) == True): #代表已經是數值了，不需要轉換中文成數字
                 a_value = int(a)
-            if (str.isdigit(b) == True):
-                b_value = int(b)
-            if (str.isdigit(a) != True):  # 代表是中字，需要轉換中文成數字
+            elif(str.isdigit(a) != True): #代表是中字，需要轉換中文成數字
                 a_value = chinese_to_arabic(a)
-            if (str.isdigit(b) != True):
+            if(len(ner_dict['price'])>1):
+                b = ner_dict['price'][1].split('元')[0]
+            if(str.isdigit(b) == True):
+                b_value = int(b)
+            elif(str.isdigit(b) != True):
                 b_value = chinese_to_arabic(b)
             min_price = min(a_value, b_value)
             max_price = max(a_value, b_value)
             rent_df = rent_df.loc[rent_df['price'] > float(min_price)]
             rent_df = rent_df.loc[rent_df['price'] < float(max_price)]
             del Ner_after['price']
+        else:
+            rent_df = rent_df.loc[rent_df['price'] == float(a_value)]
+            del Ner_after['price']
     except:
         pass
+
     if (len(Ner_after) != 0):
         for i in range(len(Ner_after)):  # 其他的 Ner select
             rent_df = rent_df.loc[rent_df[list(Ner_after.keys())[i]] == list(
                 Ner_after.values())[i][0]]
 
-    # 隨機挑選5個數字，作為隨機挑出的5筆資料的index
     sample = []
-    for i in range(5):
-        sample.append(random.randint(0, len(rent_df) - 1))
-    # 將隨機挑出的資料，轉為list
-    result = rent_df.iloc[sample, [4, 18, 19]]
-    result_title = result['title'].values.tolist()
-    result_url = result['url'].values.tolist()
-    result_pic = result['pic'].values.tolist()
-
-    # 將挑出的資料依序組合成字串
-    result_text = {}
-    for i in range(5):
-        result_list = []
-        result_list.append(result_title[i])
-        result_list.append(result_url[i])
-        result_list.append(result_pic[i])
-        result_text[i] = result_list
-
+    if(len(rent_df)>0):
+        if(len(rent_df) >= 5): #higher than five results
+            for i in range(5):
+                sample.append(random.randint(0, len(rent_df) - 1))
+        else: #lower than five results
+            for i in range(len(rent_df)):
+                sample.append(random.randint(0, len(rent_df) - 1))
+        # 將隨機挑出的資料，轉為list
+        result = rent_df.iloc[sample, [4, 6, 7, 8, 18, 19]]
+        result_title = result['title'].values.tolist()
+        result_price = result['price'].values.tolist()
+        result_layout = result['layout'].values.tolist()
+        result_area = result['area'].values.tolist()
+        result_url = result['url'].values.tolist()
+        result_pic = result['pic'].values.tolist()
+        # 將挑出的資料依序組合成字串
+        # result_text = ""
+        result_text = {}
+        for i in range(len(result)):
+            result_list = []
+            result_list.append(result_title[i])
+            result_list.append(result_price[i])
+            result_list.append(result_layout[i])
+            result_list.append(result_area[i])
+            result_list.append(result_url[i])
+            result_list.append(result_pic[i])
+            result_text[i] = result_list
+    else: #no output value
+        result_text = "搜尋不到相關物件，未來將會更新，敬請期待"
     return result_text
 
 
-def chinese_to_arabic(chinese_value):
+def chinese_to_arabic(chinese_value): #convert chinese into number
     zh2digit_table = {'零': 0, '一': 1, '二': 2, '兩': 2, '三': 3, '四': 4, '五': 5, '六': 6, '七': 7, '八': 8, '九': 9, '十': 10, '百': 100, '千': 1000, '〇': 0, '○': 0, '○': 0, '０': 0, '１': 1, '２': 2,
                       '３': 3, '４': 4, '５': 5, '６': 6, '７': 7, '８': 8, '９': 9, '壹': 1, '貳': 2, '參': 3, '肆': 4, '伍': 5, '陆': 6, '柒': 7, '捌': 8, '玖': 9, '拾': 10, '佰': 100, '仟': 1000, '萬': 10000, '億': 100000000}
     digit_num = 0

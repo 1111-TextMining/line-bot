@@ -382,10 +382,16 @@ def callback(request):
                 print('event.message.text', event.message.text)
                 output_dict = model(event.message.text)
                 result_text = output_data(output_dict)
-                line_bot_api.reply_message(
-                    event.reply_token,
-                    house(result_text)
-                )
+                if(type(result_text) == str):
+                    line_bot_api.reply_message(
+                        event.reply_token,
+                        TextSendMessage(text=result_text)
+                    )
+                else:
+                    line_bot_api.reply_message(
+                        event.reply_token,
+                        house(result_text)
+                    )
         return HttpResponse()
     else:
         return HttpResponseBadRequest()

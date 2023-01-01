@@ -241,6 +241,7 @@ def output_data(output_dict):
             elif (MONEY_key == '<'):  # 小於
                 rent_df = rent_df.loc[rent_df['price'] < MONEY_value]
             del Ner_after['price']
+    
     try:
         if(len(ner_dict['area (坪)'])>=1): #deal with 價格區間值
             a = ner_dict['area (坪)'][0].split('坪')[0]
@@ -252,10 +253,10 @@ def output_data(output_dict):
             
             if(len(ner_dict['area (坪)'])>1):
                 b = ner_dict['area (坪)'][1].split('坪')[0]
-            if(str.isdigit(b) == True):
-                b_value = int(b)
-            elif(str.isdigit(b) != True):
-                b_value = chinese_to_arabic(b)
+                if(str.isdigit(b) == True):
+                    b_value = int(b)
+                elif(str.isdigit(b) != True):
+                    b_value = chinese_to_arabic(b)
             min_area = min(a_value, b_value)
             max_area = max(a_value, b_value)
             rent_df = rent_df.loc[rent_df['area (坪)'] > float(min_area)]
@@ -276,10 +277,10 @@ def output_data(output_dict):
                 a_value = chinese_to_arabic(a)
             if(len(ner_dict['price'])>1):
                 b = ner_dict['price'][1].split('元')[0]
-            if(str.isdigit(b) == True):
-                b_value = int(b)
-            elif(str.isdigit(b) != True):
-                b_value = chinese_to_arabic(b)
+                if(str.isdigit(b) == True):
+                    b_value = int(b)
+                elif(str.isdigit(b) != True):
+                    b_value = chinese_to_arabic(b)
             min_price = min(a_value, b_value)
             max_price = max(a_value, b_value)
             rent_df = rent_df.loc[rent_df['price'] > float(min_price)]

@@ -228,7 +228,7 @@ def output_data(output_dict):
             Layout_value = int(
                 filter_dict['LAYOUT'][1].split('坪')[0])  # 去除坪數單位
             if (Layout_key == '>'):  # 大於
-                c[rent_df['area (坪)'] > Layout_value]
+                [rent_df['area (坪)'] > Layout_value]
             elif (Layout_key == '<'):  # 小於
                 rent_df = rent_df.loc[rent_df['area (坪)'] < Layout_value]
             del Ner_after['area (坪)']
@@ -267,6 +267,7 @@ def output_data(output_dict):
                 del Ner_after['area (坪)']
     except:
         pass
+    #判斷 price 區間（之間、
     try:
         if(len(ner_dict['price'])>=1):
             a = ner_dict['price'][0].split('元')[0]

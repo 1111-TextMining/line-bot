@@ -10,8 +10,8 @@ def house(result_text):
     bubbles = []
     # datas = House.objects.filter(uid=uid)
     for i in range(len(result_text)):
-        house_name = result_text[i][0]  # 第0個位置表標題
-        section = result_text[i][1]  # 第1個位置表低區
+        section = result_text[i][0]  # 第0個位置表低區
+        house_name = result_text[i][1]  # 第1個位置表標題
         price = result_text[i][2]  # 第2個位置表價格
         layout = result_text[i][3]  # 第3個位置表幾房幾廳
         area = result_text[i][4]  # 第4個位置表坪數

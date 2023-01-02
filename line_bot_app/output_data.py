@@ -147,9 +147,9 @@ def output_data(output_dict):
                     rent_df = rent_df.loc[rent_df[Ner_key[i]] > float(min_price)]
                     rent_df = rent_df.loc[rent_df[Ner_key[i]] < float(max_price)]
                     del Ner_after[Ner_key[i]]
-            elif(len(ner_dict[Ner_key[i]])==1 and (Ner_key[i] == 'price'or Ner_key[i] == 'area (坪)')):
-                rent_df = rent_df.loc[rent_df[Ner_key[i]] == float(a_value)]
-                del Ner_after[Ner_key[i]]
+                elif(len(ner_dict[Ner_key[i]])==1 and (Ner_key[i] == 'price'or Ner_key[i] == 'area (坪)')):
+                    rent_df = rent_df.loc[rent_df[Ner_key[i]] == float(a_value)]
+                    del Ner_after[Ner_key[i]]
         
     if (len(Ner_after) != 0):
         for i in range(len(Ner_after)):  # 其他的 Ner select

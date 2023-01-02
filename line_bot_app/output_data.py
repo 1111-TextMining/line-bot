@@ -14,31 +14,6 @@ def output_data(output_dict):
         if (ws_list[i]):
             # 若使用者輸入房子則 rend_df 移除車位欄位
             rent_df = rent_df.loc[rent_df['kind'] != '車位']
-    for i in range(0, len(ner_dict)):
-        # 處理 ner 出來的資訊
-        if (Ner_key[i] == 'SEC'):  # section（區）
-            ner_dict['section'] = Ner_value[i]
-            del ner_dict['SEC']
-
-        elif (Ner_key[i] == 'GPE'):  # section（區）
-            ner_dict['section'] = Ner_value[i]
-            del ner_dict['GPE']
-
-        elif (Ner_key[i] == 'LOC'):  # section（區）
-            ner_dict['section'] = Ner_value[i]
-            del ner_dict['LOC']
-
-        elif (Ner_key[i] == 'MONEY'):  # 價格
-            ner_dict['price'] = Ner_value[i]
-            del ner_dict['MONEY']
-
-        elif (Ner_key[i] == 'CARDINAL'):  # 價格
-            ner_dict['price'] = Ner_value[i]
-            del ner_dict['CARDINAL']
-
-        elif (Ner_key[i] == 'QUANTITY'):  # 坪數
-            ner_dict['area (坪)'] = Ner_value[i]
-            del ner_dict['QUANTITY']
     
     Ner_after = ner_dict
     try:
@@ -70,7 +45,27 @@ def output_data(output_dict):
             
     except:
         pass
+    
+    for i in range(0,len(ner_dict)):
+        # 處理 ner 出來的資訊
+        if(Ner_key[i] == 'SEC'): #section（區）
+            ner_dict['section'] = Ner_value[i]                         
 
+        elif(Ner_key[i] == 'GPE'): #section（區）
+            ner_dict['section'] = Ner_value[i]                         
+
+        elif(Ner_key[i] == 'LOC'): #section（區）
+            ner_dict['section'] = Ner_value[i]                         
+                            
+        elif(Ner_key[i] == 'MONEY'): #價格 
+            ner_dict['price'] = Ner_value[i]
+
+        elif(Ner_key[i] == 'CARDINAL'): #價格
+            ner_dict['price'] = Ner_value[i]
+
+        elif(Ner_key[i] == 'QUANTITY'): #坪數
+            ner_dict['area (坪)'] = Ner_value[i]
+        del ner_dict[Ner_key[i]]
     # 若有 filter 值
     filter_dict = output_dict['filter']
     filter_key = list(filter_dict.keys())
@@ -163,13 +158,14 @@ def output_data(output_dict):
                 Ner_after.values())[i][0]]
 
     sample = []
+    
     if(len(rent_df)>0):
         if(len(rent_df) >= 5): #higher than five results
-            for i in range(5):
-                sample.append(random.randint(0, len(rent_df) - 1))
+            sample = random.sample(range(len(rent_df) - 1), 5)
+                
         else: #lower than five results
-            for i in range(len(rent_df)):
-                sample.append(random.randint(0, len(rent_df) - 1))
+            sample = [*range(0,len(rent_df),1)]
+
         # 將隨機挑出的資料，轉為list
         result = rent_df.iloc[sample, [2, 4, 6, 7, 8, 18, 19]]
         result_section = result['section'].values.tolist()

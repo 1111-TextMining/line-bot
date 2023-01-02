@@ -221,22 +221,22 @@ def house_note():
             "contents": [
             {
                 "type": "button",
-                "style": "link",
-                "height": "sm",
+                "style": "secondary",
+                "height": "md",
                 "action": {
-                "type": "uri",
+                "type": "message",
                 "label": "查看筆記",
-                "uri": "https://linecorp.com"
+                "text": "查看筆記"
                 }
             },
             {
                 "type": "button",
-                "style": "link",
-                "height": "sm",
+                "style": "secondary",
+                "height": "md",
                 "action": {
-                "type": "uri",
+                "type": "message",
                 "label": "新增筆記",
-                "uri": "https://linecorp.com"
+                "text": "新增筆記"
                 }
             },
             {

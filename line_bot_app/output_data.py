@@ -79,25 +79,35 @@ def output_data(output_dict):
         except:
             pass
 
-    for n in range(len(output_dict['filter'])):  # 判別 filter
+    for n in range(len(output_dict['filter'])): #判別 filter
 
-        if (list(output_dict['filter'].keys())[n] == 'LAYOUT' and len(ner_dict['area (坪)']) <= 1):
+        if(list(output_dict['filter'].keys())[n] == 'LAYOUT' and len(ner_dict['area (坪)']) <= 1):
             Layout_key = filter_dict['LAYOUT'][0]
-            Layout_value = int(
-                filter_dict['LAYOUT'][1].split('坪')[0])  # 去除坪數單位
-            if (Layout_key == '>'):  # 大於
-                [rent_df['area (坪)'] > Layout_value]
-            elif (Layout_key == '<'):  # 小於
-                rent_df = rent_df.loc[rent_df['area (坪)'] < Layout_value]
+            Layout_value = filter_dict['LAYOUT'][1].split('坪')[0]
+            value = 0
+            if(str.isdigit(Layout_value) == True): #代表已經是數值了，不需要轉換中文成數字
+                value = int(Layout_value)
+            elif(str.isdigit(Layout_value) != True): #代表是中字，需要轉換中文成數字
+                value = chinese_to_arabic(Layout_value)
+            
+            if(Layout_key == '>'): #大於
+                rent_df = rent_df.loc[rent_df['area (坪)'] > value]
+            elif(Layout_key == '<'): #小於
+                rent_df = rent_df.loc[rent_df['area (坪)'] < value]
             del Ner_after['area (坪)']
 
-        elif (list(output_dict['filter'].keys())[n] == 'MONEY' and len(ner_dict['price']) <= 1):
+        elif(list(output_dict['filter'].keys())[n] == 'MONEY' and len(ner_dict['price']) <= 1):
             MONEY_key = filter_dict['MONEY'][0]
-            MONEY_value = int(filter_dict['MONEY'][1].split('元')[0])  # 去除金額單位
-            if (MONEY_key == '>'):  # 大於
-                rent_df = rent_df.loc[rent_df['price'] > MONEY_value]
-            elif (MONEY_key == '<'):  # 小於
-                rent_df = rent_df.loc[rent_df['price'] < MONEY_value]
+            MONEY_value = filter_dict['MONEY'][1].split('元')[0]
+            if(str.isdigit(MONEY_value) == True): #代表已經是數值了，不需要轉換中文成數字
+                value = int(MONEY_value)
+            elif(str.isdigit(MONEY_value) != True): #代表是中字，需要轉換中文成數字
+                value = chinese_to_arabic(MONEY_value)
+
+            if(MONEY_key == '>'): #大於
+                rent_df = rent_df.loc[rent_df['price'] > value]
+            elif(MONEY_key == '<'): #小於
+                rent_df = rent_df.loc[rent_df['price'] < value]
             del Ner_after['price']
     
     try:

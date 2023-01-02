@@ -16,7 +16,8 @@ def output_data(output_dict):
             rent_df = rent_df.loc[rent_df['kind'] != '車位']
     
     Ner_after = ner_dict
-    try:
+    
+    try: #get request data
         for i in range(0, len(ner_dict['REQ'])):
             if(ner_dict['REQ'][i] == '公車站'):
                 rent_df = rent_df.loc[rent_df['bus'] >= 1]
@@ -66,18 +67,9 @@ def output_data(output_dict):
         elif(Ner_key[i] == 'QUANTITY'): #坪數
             ner_dict['area (坪)'] = Ner_value[i]
         del ner_dict[Ner_key[i]]
+        
     # 若有 filter 值
     filter_dict = output_dict['filter']
-    filter_key = list(filter_dict.keys())
-    filter_value = list(filter_dict.values())
-
-    # 轉中文字至數字
-    for i in range(len(filter_dict)):
-        try:
-            filter_dict[filter_key[i]][1] = chinese_to_arabic(
-                filter_dict[filter_key[i]][1])
-        except:
-            pass
 
     for n in range(len(output_dict['filter'])): #判別 filter
 
@@ -110,67 +102,53 @@ def output_data(output_dict):
                 rent_df = rent_df.loc[rent_df['price'] < value]
             del Ner_after['price']
     
-    try:
-        if(len(ner_dict['area (坪)'])>=1): #deal with 價格區間值
-            a = ner_dict['area (坪)'][0].split('坪')[0]
-            a_value = 0
-            if(str.isdigit(a) == True): #代表已經是數值了，不需要轉換中文成數字
-                a_value = int(a)
-            elif(str.isdigit(a) != True): #代表是中字，需要轉換中文成數字
-                a_value = chinese_to_arabic(a)
-            
-            if(len(ner_dict['area (坪)'])>1):
-                b = ner_dict['area (坪)'][1].split('坪')[0]
-                if(str.isdigit(b) == True):
-                    b_value = int(b)
-                elif(str.isdigit(b) != True):
-                    b_value = chinese_to_arabic(b)
-                min_area = min(a_value, b_value)
-                max_area = max(a_value, b_value)
-                rent_df = rent_df.loc[rent_df['area (坪)'] > float(min_area)]
-                rent_df = rent_df.loc[rent_df['area (坪)'] < float(max_area)]
-                del Ner_after['area (坪)']
-            else:
-                rent_df = rent_df.loc[rent_df['area (坪)'] == float(a_value)]
-                del Ner_after['area (坪)']
-    except:
-        pass
-    #判斷 price 區間（之間、
-    try:
-        if(len(ner_dict['price'])>=1):
-            a = ner_dict['price'][0].split('元')[0]
-            a_value = 0
-            if(str.isdigit(a) == True): #代表已經是數值了，不需要轉換中文成數字
-                a_value = int(a)
-            elif(str.isdigit(a) != True): #代表是中字，需要轉換中文成數字
-                a_value = chinese_to_arabic(a)
+    Ner_key = list(ner_dict.keys())
+    Ner_value = list(ner_dict.values())
 
-            if(len(ner_dict['price'])>1):
-                b = ner_dict['price'][1].split('元')[0]
-                if(str.isdigit(b) == True):
-                    b_value = int(b)
-                elif(str.isdigit(b) != True):
-                    b_value = chinese_to_arabic(b)
-                min_price = min(a_value, b_value)
-                max_price = max(a_value, b_value)
-                rent_df = rent_df.loc[rent_df['price'] > float(min_price)]
-                rent_df = rent_df.loc[rent_df['price'] < float(max_price)]
-                del Ner_after['price']
-            else:
-                rent_df = rent_df.loc[rent_df['price'] == float(a_value)]
-                del Ner_after['price']
-    except:
-        pass
+    if(len(ner_dict) >= 1):
+        for i in range(len(ner_dict)):
+            if(len(ner_dict[Ner_key[i]])>=1 and (Ner_key[i] == 'price'or Ner_key[i] == 'area (坪)')):
+                a_value = 0
+                if(Ner_key[i] == 'price'):
+                    a = ner_dict['price'][0].split('元')[0]
+                elif(Ner_key[i] == 'area (坪)'):
+                    a = ner_dict['area (坪)'][0].split('坪')[0]
 
+                if(str.isdigit(a) == True): #代表已經是數值了，不需要轉換中文成數字
+                    a_value = int(a)
+                elif(str.isdigit(a) != True): #代表是中字，需要轉換中文成數字
+                    a_value = chinese_to_arabic(a)
+                
+                if(len(ner_dict[Ner_key[i]])>1):
+                    b_value = 0
+                    if(Ner_key[i] == 'price'):
+                        b = ner_dict['price'][1].split('元')[0]
+                    elif(Ner_key[i] == 'area (坪)'):
+                        b = ner_dict['area (坪)'][1].split('坪')[0]
+                    
+                    if(str.isdigit(b) == True):
+                        b_value = int(b)
+                    elif(str.isdigit(b) != True):
+                        b_value = chinese_to_arabic(b)
+
+                    min_price = min(a_value, b_value)
+                    max_price = max(a_value, b_value)
+                    rent_df = rent_df.loc[rent_df[Ner_key[i]] > float(min_price)]
+                    rent_df = rent_df.loc[rent_df[Ner_key[i]] < float(max_price)]
+                    del Ner_after[Ner_key[i]]
+            elif(len(ner_dict[Ner_key[i]])==1 and (Ner_key[i] == 'price'or Ner_key[i] == 'area (坪)')):
+                rent_df = rent_df.loc[rent_df[Ner_key[i]] == float(a_value)]
+                del Ner_after[Ner_key[i]]
+        
     if (len(Ner_after) != 0):
         for i in range(len(Ner_after)):  # 其他的 Ner select
             rent_df = rent_df.loc[rent_df[list(Ner_after.keys())[i]] == list(
                 Ner_after.values())[i][0]]
 
-    sample = []
     
-    if(len(rent_df)>0):
+    if(len(rent_df)>0): #output recommend houses
         if(len(rent_df) >= 5): #higher than five results
+            sample = []
             sample = random.sample(range(len(rent_df) - 1), 5)
                 
         else: #lower than five results

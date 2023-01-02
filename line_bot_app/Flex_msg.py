@@ -301,7 +301,7 @@ def warm_reminder():
                 "action": {
                 "type": "uri",
                 "label": "租屋小叮嚀",
-                "uri": "https://linecorp.com"
+                "uri": "https://docs.google.com/document/d/18mPzA5NDFCnbwckJQdZzbEhMLwZD0fN8Rl490AIxKyk/edit"
                 }
             },
             {
@@ -311,7 +311,7 @@ def warm_reminder():
                 "action": {
                 "type": "uri",
                 "label": "買房小叮嚀",
-                "uri": "https://linecorp.com"
+                "uri": "https://docs.google.com/document/d/1k9kmVnVau0O-fS3md-j1mkrpFdiiD_ghszkczWoi-Hs/edit"
                 }
             },
             {

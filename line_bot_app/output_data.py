@@ -1,6 +1,7 @@
 import pandas as pd
 from linebot.models import *
 import random
+import ast
 
 def output_data(output_dict):
     rent_df = pd.read_csv('clean_rent.csv')
@@ -15,6 +16,12 @@ def output_data(output_dict):
             # 若使用者輸入房子則 rend_df 移除車位欄位
             rent_df = rent_df.loc[rent_df['kind'] != '車位']
     
+    #計算 facility 數量
+    text = rent_df['facility'].values
+    for i in range(len(text)):
+        text[i] = len(ast.literal_eval(rent_df['facility'].values[i]))
+    rent_df.insert(26, "facility_num", text)
+
     Ner_after = ner_dict
     
     try: #get request data
@@ -42,6 +49,10 @@ def output_data(output_dict):
             
             elif(ner_dict['REQ'][i] == '押金'):
                 rent_df = rent_df.loc[rent_df['deposit'] == '無']
+            
+            elif(ner_dict['REQ'][i] == '電器'):
+                rent_df = rent_df.loc[rent_df['facility_num'] >= 1]
+
         del Ner_after['REQ']
             
     except:
@@ -67,7 +78,7 @@ def output_data(output_dict):
         elif(Ner_key[i] == 'QUANTITY'): #坪數
             ner_dict['area (坪)'] = Ner_value[i]
         del ner_dict[Ner_key[i]]
-        
+
     # 若有 filter 值
     filter_dict = output_dict['filter']
 

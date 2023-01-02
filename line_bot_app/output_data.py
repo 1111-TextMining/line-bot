@@ -49,10 +49,10 @@ def output_data(output_dict):
             elif(ner_dict['REQ'][i] == '管理費'):
                 rent_df = rent_df.loc[rent_df['priceadd'] == '管理費']
 
-            elif(ner_dict['REQ'][i] == '小學' or ner_dict['REQ'][i] == '中學'):
+            elif(ner_dict['REQ'][i] == '小學'):
                 rent_df = rent_df.loc[rent_df['primary'] >= 1]
 
-            elif(ner_dict['REQ'][i] == '高中'):
+            elif(ner_dict['REQ'][i] == '中學' or ner_dict['REQ'][i] == '高中'):
                 rent_df = rent_df.loc[rent_df['secondary'] >= 1]
 
             elif(ner_dict['REQ'][i] == '大學'):
@@ -64,6 +64,8 @@ def output_data(output_dict):
             elif(ner_dict['REQ'][i] == '地鐵站' or ner_dict['REQ'][i] == '捷運站'):
                 rent_df = rent_df.loc[rent_df['subway'] >= 1]
             
+            elif(ner_dict['REQ'][i] == '押金'):
+                rent_df = rent_df.loc[rent_df['deposit'] == '無']
         del Ner_after['REQ']
             
     except:

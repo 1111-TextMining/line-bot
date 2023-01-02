@@ -83,7 +83,7 @@ def model(words):
     section_matcher.add('SectionList', section_patterns)
 
     request_matcher = PhraseMatcher(nlp.vocab)
-    requests = ['公車站', '管理費', '電器', '小學', '中學', '大學', '餐廳', '地鐵站']
+    requests = ['公車站', '管理費', '電器', '小學', '中學', '大學', '餐廳', '地鐵站', '押金']
     request_patterns = [nlp(text) for text in requests]
     request_matcher.add('RequestList', request_patterns)
 

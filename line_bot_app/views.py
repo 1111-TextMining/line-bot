@@ -180,6 +180,10 @@ def callback(request):
                 result_text = output_data(output_dict)
                 if '看房筆記' in event.message.text:
                     line_bot_api.reply_message(event.reply_token, house_note())
+
+                if '小叮嚀' in event.message.text:
+                    line_bot_api.reply_message(event.reply_token, warm_reminder())
+
                 if(type(result_text) == str):
                     line_bot_api.reply_message(
                         event.reply_token,

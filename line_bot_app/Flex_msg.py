@@ -250,3 +250,78 @@ def house_note():
         }
     }
     return FlexSendMessage(alt_text='看房筆記', contents=contents)
+
+def warm_reminder():
+    contents = {
+        "type": "bubble",
+        "body": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+            {
+                "type": "text",
+                "text": "小叮嚀",
+                "weight": "bold",
+                "size": "xl"
+            },
+            {
+                "type": "box",
+                "layout": "vertical",
+                "margin": "lg",
+                "spacing": "sm",
+                "contents": [
+                {
+                    "type": "box",
+                    "layout": "baseline",
+                    "spacing": "sm",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "租屋買房小叮嚀！",
+                        "wrap": True,
+                        "color": "#666666",
+                        "size": "sm",
+                        "flex": 5
+                    }
+                    ]
+                }
+                ]
+            }
+            ]
+        },
+        "footer": {
+            "type": "box",
+            "layout": "vertical",
+            "spacing": "sm",
+            "contents": [
+            {
+                "type": "button",
+                "style": "link",
+                "height": "sm",
+                "action": {
+                "type": "uri",
+                "label": "租屋小叮嚀",
+                "uri": "https://linecorp.com"
+                }
+            },
+            {
+                "type": "button",
+                "style": "link",
+                "height": "sm",
+                "action": {
+                "type": "uri",
+                "label": "買房小叮嚀",
+                "uri": "https://linecorp.com"
+                }
+            },
+            {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [],
+                "margin": "sm"
+            }
+            ],
+            "flex": 0
+        }
+    }
+    return FlexSendMessage(alt_text='小叮嚀', contents=contents)

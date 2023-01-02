@@ -177,4 +177,4 @@ def house(result_text):
         }
         bubbles.append(bubble)
     contents['contents'] = bubbles
-    return FlexSendMessage(alt_text='工作進度', contents=contents)
+    return FlexSendMessage(alt_text='租房推薦', contents=contents)

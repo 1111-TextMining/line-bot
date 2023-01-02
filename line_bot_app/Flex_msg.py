@@ -240,16 +240,6 @@ def house_note():
                 }
             },
             {
-                "type": "button",
-                "style": "link",
-                "height": "sm",
-                "action": {
-                "type": "uri",
-                "label": "筆記推薦房子",
-                "uri": "https://linecorp.com"
-                }
-            },
-            {
                 "type": "box",
                 "layout": "vertical",
                 "contents": [],

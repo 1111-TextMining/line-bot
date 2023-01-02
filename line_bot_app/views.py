@@ -188,6 +188,8 @@ def callback(request):
                         event.reply_token,
                         house(result_text)
                     )
+                if '看房筆記' in event.message.text:
+                    line_bot_api.reply_message(event.reply_token, house_note())
         return HttpResponse()
     else:
         return HttpResponseBadRequest()

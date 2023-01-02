@@ -4,11 +4,9 @@ from linebot.models import *
 
 
 def house(result_text):
-    print(result_text)
     contents = dict()
     contents['type'] = 'carousel'
     bubbles = []
-    # datas = House.objects.filter(uid=uid)
     for i in range(len(result_text)):
         section = result_text[i][0]  # 第0個位置表低區
         house_name = result_text[i][1]  # 第1個位置表標題
@@ -17,7 +15,6 @@ def house(result_text):
         area = result_text[i][4]  # 第4個位置表坪數
         url = result_text[i][5]  # 第5個位置表591url
         pic = result_text[i][6]  # 第6個位置表圖片
-        print(pic, url, house_name)
         bubble = {
             "type": "bubble",
             "size": "micro",
@@ -177,4 +174,89 @@ def house(result_text):
         }
         bubbles.append(bubble)
     contents['contents'] = bubbles
-    return FlexSendMessage(alt_text='租房推薦', contents=contents)
+    return FlexSendMessage(alt_text='租屋推薦', contents=contents)
+
+def house_note():
+    contents = {
+        "type": "bubble",
+        "body": {
+            "type": "box",
+            "layout": "vertical",
+            "contents": [
+            {
+                "type": "text",
+                "text": "看房筆記",
+                "weight": "bold",
+                "size": "xl"
+            },
+            {
+                "type": "box",
+                "layout": "vertical",
+                "margin": "lg",
+                "spacing": "sm",
+                "contents": [
+                {
+                    "type": "box",
+                    "layout": "baseline",
+                    "spacing": "sm",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "歡迎紀錄下來自己的看房筆記，以下功能歡迎點選！",
+                        "wrap": True,
+                        "color": "#666666",
+                        "size": "sm",
+                        "flex": 5
+                    }
+                    ]
+                }
+                ]
+            }
+            ]
+        },
+        "footer": {
+            "type": "box",
+            "layout": "vertical",
+            "spacing": "sm",
+            "contents": [
+            {
+                "type": "button",
+                "style": "link",
+                "height": "sm",
+                "action": {
+                "type": "uri",
+                "label": "查看筆記",
+                "uri": "https://linecorp.com"
+                }
+            },
+            {
+                "type": "button",
+                "style": "link",
+                "height": "sm",
+                "action": {
+                "type": "uri",
+                "label": "新增筆記",
+                "uri": "https://linecorp.com"
+                }
+            },
+            {
+                "type": "button",
+                "style": "link",
+                "height": "sm",
+                "action": {
+                "type": "uri",
+                "label": "筆記推薦房子",
+                "uri": "https://linecorp.com"
+                }
+            },
+            {
+                "type": "box",
+                "layout": "vertical",
+                "contents": [],
+                "margin": "sm"
+            }
+            ],
+            "flex": 0
+        }
+    }
+    return FlexSendMessage(alt_text='看房筆記', contents=contents)

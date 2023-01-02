@@ -9,12 +9,22 @@ def output_data(output_dict):
     ner_dict = output_dict['ner']
     Ner_key = list(ner_dict.keys())
     Ner_value = list(ner_dict.values())
-
     ws_list = output_dict['ws']
+
     for i in range(len(ws_list)):
         if (ws_list[i]):
             # 若使用者輸入房子則 rend_df 移除車位欄位
             rent_df = rent_df.loc[rent_df['kind'] != '車位']
+        
+        if(output_dict['ws'][i] == "房子" or output_dict['ws'][i] == "租" or output_dict['ws'][i] == "房" or output_dict['ws'][i] == "買"):
+            break
+        
+        else:
+            print("hello")
+            if(len(output_dict['ner']) == 0 and len(output_dict['filter']) == 0):
+                print(output_dict['ws'][i])
+                result_text = "我是 591 的 linebot，僅能協助查詢租屋以及買房，請輸入與買房租房相關資料"
+                return result_text
     
     #計算 facility 數量
     text = rent_df['facility'].values
@@ -150,7 +160,7 @@ def output_data(output_dict):
                 elif(len(ner_dict[Ner_key[i]])==1 and (Ner_key[i] == 'price'or Ner_key[i] == 'area (坪)')):
                     rent_df = rent_df.loc[rent_df[Ner_key[i]] == float(a_value)]
                     del Ner_after[Ner_key[i]]
-        
+            
     if (len(Ner_after) != 0):
         for i in range(len(Ner_after)):  # 其他的 Ner select
             rent_df = rent_df.loc[rent_df[list(Ner_after.keys())[i]] == list(

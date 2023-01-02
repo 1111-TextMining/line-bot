@@ -178,6 +178,8 @@ def callback(request):
                 print('event.message.text', event.message.text)
                 output_dict = model(event.message.text)
                 result_text = output_data(output_dict)
+                if '看房筆記' in event.message.text:
+                    line_bot_api.reply_message(event.reply_token, house_note())
                 if(type(result_text) == str):
                     line_bot_api.reply_message(
                         event.reply_token,
@@ -188,8 +190,6 @@ def callback(request):
                         event.reply_token,
                         house(result_text)
                     )
-                if '看房筆記' in event.message.text:
-                    line_bot_api.reply_message(event.reply_token, house_note())
         return HttpResponse()
     else:
         return HttpResponseBadRequest()

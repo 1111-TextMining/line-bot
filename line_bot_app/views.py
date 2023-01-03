@@ -175,13 +175,20 @@ def callback(request):
 
         for event in events:
             if isinstance(event, MessageEvent):
-                print('event.message.text', event.message.text)
-                output_dict = model(event.message.text)
+                mtext = event.message.text
+                output_dict = model(mtext)
                 result_text = output_data(output_dict)
-                if '看房筆記' in event.message.text:
+                
+                if '看房筆記' in mtext:
                     line_bot_api.reply_message(event.reply_token, house_note())
 
-                if '小叮嚀' in event.message.text:
+                elif '租屋小叮嚀' in mtext:
+                    line_bot_api.reply_message(event.reply_token, warm_reminder_rent())
+                
+                elif '買房小叮嚀' in mtext:
+                    line_bot_api.reply_message(event.reply_token, warm_reminder_buy())
+
+                elif '小叮嚀' in mtext:
                     line_bot_api.reply_message(event.reply_token, warm_reminder())
 
                 if(type(result_text) == str):

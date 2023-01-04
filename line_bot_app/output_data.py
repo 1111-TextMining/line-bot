@@ -4,7 +4,7 @@ import random
 import ast
 
 def output_data(output_dict):
-    rent_df = pd.read_csv('clean_rent.csv')
+    rent_df = pd.read_csv('C:\FinalProject\clean_rent.csv')
 
     ner_dict = output_dict['ner']
     Ner_key = list(ner_dict.keys())
@@ -20,7 +20,9 @@ def output_data(output_dict):
             break
         
         else:
+            print("hello")
             if(len(output_dict['ner']) == 0 and len(output_dict['filter']) == 0):
+                print(output_dict['ws'][i])
                 result_text = "我是 591 的 linebot，僅能協助查詢租屋以及買房，請輸入與買房租房相關資料"
                 return result_text
     

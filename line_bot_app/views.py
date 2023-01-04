@@ -15,8 +15,11 @@ from gensim import corpora
 import spacy
 from spacy.matcher import PhraseMatcher
 import random
+import datetime
+import pytz
 from line_bot_app.Flex_msg import *
 from line_bot_app.output_data import *
+from line_bot_app.models import *
 
 # Create your views here.
 line_bot_api = LineBotApi(settings.LINE_CHANNEL_ACCESS_TOKEN)
@@ -159,12 +162,16 @@ def model(words):
 
     return message
 
+
 @csrf_exempt
 def callback(request):
 
     if request.method == 'POST':
         signature = request.META['HTTP_X_LINE_SIGNATURE']
         body = request.body.decode('utf-8')
+
+        reminder = '請開始書寫您的筆記！'
+        notification = '已儲存您的筆記！'
 
         try:
             events = parser.parse(body, signature)
@@ -175,32 +182,111 @@ def callback(request):
 
         for event in events:
             if isinstance(event, MessageEvent):
+
+                time_zone = pytz.timezone('Asia/Taipei')
+                now = datetime.datetime.now(time_zone)
+
+                uid = event.source.user_id
                 mtext = event.message.text
-                output_dict = model(mtext)
-                result_text = output_data(output_dict)
-                
-                if '看房筆記' in mtext:
+
+                messages = User_Message.objects.filter(uid=uid).order_by(
+                    '-mdt').values('mtext', 'rtext', 'mdt')
+                messages_list = list(messages)
+
+                output_dict = {}
+                result_text = ''
+
+                flag = True
+
+                default_text = [reminder, notification,
+                                '看房筆記', '查看筆記', '無筆記紀錄', '新增筆記', '小叮嚀']
+
+                if len(messages_list) > 0:
+                    if messages_list[0]['rtext'] == reminder:
+                        User_Note.objects.create(uid=uid, notes=mtext)
+                        line_bot_api.reply_message(
+                            event.reply_token, TextSendMessage(text=notification))
+                        output_dict = {'ws': [], 'ner': {}, 'filter': {}}
+                        result_text = notification
+                        flag = False
+
+                if '看房筆記' in event.message.text:
                     line_bot_api.reply_message(event.reply_token, house_note())
+                    output_dict = {'ws': [], 'ner': {}, 'filter': {}}
+                    result_text = '看房筆記'
+                    flag = False
 
-                elif '租屋小叮嚀' in mtext:
-                    line_bot_api.reply_message(event.reply_token, warm_reminder_rent())
-                
-                elif '買房小叮嚀' in mtext:
-                    line_bot_api.reply_message(event.reply_token, warm_reminder_buy())
+                if '查看筆記' in event.message.text:
+                    notes = User_Note.objects.filter(
+                        uid=uid).values('notes', 'mdt')
+                    notes_list = list(notes)
 
-                elif '小叮嚀' in mtext:
-                    line_bot_api.reply_message(event.reply_token, warm_reminder())
+                    note_message = ''
 
-                if(type(result_text) == str):
+                    for note in notes_list:
+                        note_datetime = note['mdt'].astimezone(
+                            time_zone).strftime('%Y-%m-%d %H:%M')
+                        content = note['notes']
+                        note_message += note_datetime + '\n' + content + '\n'
+
+                    if note_message != '':
+                        line_bot_api.reply_message(
+                            event.reply_token, TextSendMessage(note_message))
+                        result_text = note_message
+                    else:
+                        line_bot_api.reply_message(
+                            event.reply_token, TextSendMessage('無筆記紀錄'))
+                        result_text = '無筆記紀錄'
+
+                    output_dict = {'ws': [], 'ner': {}, 'filter': {}}
+                    flag = False
+
+                if '新增筆記' in event.message.text:
                     line_bot_api.reply_message(
-                        event.reply_token,
-                        TextSendMessage(text=result_text)
-                    )
-                else:
+                        event.reply_token, TextSendMessage(text=reminder))
+                    output_dict = {'ws': [], 'ner': {}, 'filter': {}}
+                    result_text = reminder
+                    flag = False
+
+                if '小叮嚀' in event.message.text:
                     line_bot_api.reply_message(
-                        event.reply_token,
-                        house(result_text)
-                    )
+                        event.reply_token, warm_reminder())
+                    output_dict = {'ws': [], 'ner': {}, 'filter': {}}
+                    result_text = '小叮嚀'
+                    flag = False
+
+                if (flag):
+                    memories_list = []
+                    for memory in messages_list:
+                        time_diff = now - memory['mdt']
+                        tsecs = time_diff.total_seconds()
+                        if (memory['rtext'] not in default_text and memory['mtext'] not in default_text):
+                            if (tsecs <= 600):
+                                memories_list.append(memory)
+
+                    for memory in memories_list:
+                        mtext += memory['mtext']
+
+                    print('event.message.text', mtext)
+
+                    output_dict = model(mtext)
+
+                    result_text = output_data(output_dict)
+
+                    if (type(result_text) == str):
+                        line_bot_api.reply_message(
+                            event.reply_token,
+                            TextSendMessage(text=result_text)
+                        )
+                    else:
+                        line_bot_api.reply_message(
+                            event.reply_token,
+                            house(result_text)
+                        )
+
+                User_Message.objects.create(
+                    uid=uid, mtext=mtext, rtext=result_text, ner_result=output_dict)
+
         return HttpResponse()
     else:
         return HttpResponseBadRequest()
